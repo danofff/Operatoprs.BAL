@@ -23,8 +23,10 @@ namespace Operatoprs.BAL.Administrator
         {
             if (!string.IsNullOrEmpty(pathTosave))
             {
-                XmlDocument doc = new XmlDocument();
-                XmlElement root = doc.CreateElement("Operators");
+                XmlDocument doc = getOperator();
+                XmlElement root = doc.DocumentElement;
+                //че то там заменили, че то получилось итд.
+                //XmlElement root = doc.CreateElement("Operators");
 
                 XmlElement prefixes = doc.CreateElement("prefixes");
 
@@ -67,6 +69,13 @@ namespace Operatoprs.BAL.Administrator
                 message = "path for save is not define";
                 return false;
             }
+        }
+
+        public XmlDocument getOperator()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(string.Format("{0}/operators.xml", pathTosave));
+            return doc;
         }
     }
 }
