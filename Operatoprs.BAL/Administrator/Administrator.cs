@@ -1,10 +1,12 @@
 ﻿using Operatoprs.BAL.Operator;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace Operatoprs.BAL.Administrator
 {
@@ -76,6 +78,35 @@ namespace Operatoprs.BAL.Administrator
             XmlDocument doc = new XmlDocument();
             doc.Load(string.Format("{0}/operators.xml", pathTosave));
             return doc;
+        }
+
+        public bool CreateOperatorSerialize(IOperator op,out string message)
+        {
+            #region найти файл хранящий операторов
+            IOperator[] oplist = null;
+            XmlSerializer formatter = new XmlSerializer(typeof(IOperator[]));
+            using (FileStream fs = new FileStream(string.Format("{0}/operators.xml",
+                pathTosave), FileMode.OpenOrCreate))
+            {
+                oplist = (IOperator[])formatter.Deserialize(fs);
+            }
+            #endregion
+
+            #region добавить в массив передаваемого оператора
+            List<IOperator> nOpList = oplist.ToList();
+            nOpList.Add(op);
+            oplist = nOpList.ToArray();
+            #endregion
+
+            #region сериализируем новый массив
+            using (FileStream fs=new FileStream(string.Format("{0}/operators.xml",
+                pathTosave), FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, oplist);
+            }
+            #endregion
+            message = "good";
+            return true;
         }
     }
 }
